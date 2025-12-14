@@ -1,0 +1,38 @@
+# Backend
+node_modules/
+.env
+*.db
+storage/
+uploads/
+*.log
+
+# Android
+android/node_modules/
+android/.expo/
+android/npm-debug.*
+android/*.jks
+android/*.p8
+android/*.p12
+android/*.key
+android/*.mobileprovision
+android/*.orig.*
+android/web-build/
+android/.DS_Store
+android/android/app/build/
+android/android/app/release/
+android/ios/build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+.git/
