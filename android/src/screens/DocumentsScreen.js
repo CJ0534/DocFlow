@@ -10,7 +10,7 @@ import {
     ScrollView,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import DocumentPicker from 'react-native-document-picker';
+import * as DocumentPicker from 'expo-document-picker';
 import apiClient from '../api/client';
 
 const DocumentsScreen = ({ route }) => {
@@ -39,18 +39,27 @@ const DocumentsScreen = ({ route }) => {
 
     const handleUpload = async () => {
         try {
-            const result = await DocumentPicker.pick({
-                type: [DocumentPicker.types.allFiles],
+            const result = await DocumentPicker.getDocumentAsync({
+                type: '*/*',
+                copyToCacheDirectory: true,
             });
 
-            const file = result[0];
+            if (result.canceled) {
+                return;
+            }
+
+            const file = result.assets && result.assets[0];
+            if (!file) {
+                Alert.alert('Error', 'No file selected');
+                return;
+            }
 
             setUploading(true);
 
             const formData = new FormData();
             formData.append('file', {
                 uri: file.uri,
-                type: file.type || 'application/octet-stream',
+                type: file.mimeType || 'application/octet-stream',
                 name: file.name,
             });
 
@@ -63,9 +72,7 @@ const DocumentsScreen = ({ route }) => {
             Alert.alert('Success', 'File uploaded successfully');
             fetchDocuments();
         } catch (error) {
-            if (!DocumentPicker.isCancel(error)) {
-                Alert.alert('Error', error.response?.data?.error || 'Upload failed');
-            }
+            Alert.alert('Error', error.response?.data?.error || 'Upload failed');
         } finally {
             setUploading(false);
         }
