@@ -228,55 +228,7 @@ const Settings = () => {
             </div>
 
             {/* Right Panel - AI Chat */}
-            <div style={{
-                width: '350px',
-                background: 'white',
-                borderLeft: '1px solid #e2e8f0',
-                padding: '2rem',
-                display: 'flex',
-                flexDirection: 'column'
-            }}>
-                <div style={{ marginBottom: '2rem' }}>
-                    <select style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                        marginBottom: '0.5rem'
-                    }}>
-                        <option>Project 1</option>
-                    </select>
-                    <p style={{ fontSize: '0.8rem', color: '#64748b' }}>ImageShield</p>
-                </div>
 
-                <div style={{
-                    padding: '1.5rem',
-                    background: '#f8fafc',
-                    borderRadius: '12px',
-                    marginBottom: '2rem'
-                }}>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem' }}>Reqsy Ai</h3>
-                    <p style={{ fontSize: '0.85rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%' }}></span>
-                        Talk and enhance the documentation
-                    </p>
-                </div>
-
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                    <div style={{ fontSize: '4rem', marginBottom: '2rem' }}>💬</div>
-                    <button style={{
-                        padding: '0.75rem 1.5rem',
-                        background: '#3b82f6',
-                        color: 'white',
-                        borderRadius: '12px',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontWeight: '500'
-                    }}>
-                        Answer Reqsy Ai's questions
-                    </button>
-                </div>
-            </div>
         </div>
     );
 };
