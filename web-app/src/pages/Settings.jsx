@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FiGrid, FiFolder, FiFileText, FiSettings, FiLogOut, FiUser, FiBell, FiHelpCircle, FiEdit2 } from 'react-icons/fi';
@@ -7,18 +7,53 @@ const Settings = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('profile');
-    const [fullName, setFullName] = useState('Vinay Thadem');
-    const [email, setEmail] = useState(user?.email || 'vinay@gmail.com');
-    const [role, setRole] = useState('Developer - Create with code');
+    // Initialize with user metadata or defaults
+    const [fullName, setFullName] = useState(user?.user_metadata?.full_name || '');
+    const [email, setEmail] = useState(user?.email || '');
+    const [role, setRole] = useState(user?.user_metadata?.role || 'Developer - Create with code');
     const [newPassword, setNewPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    // Update local state if user object updates (e.g. on fresh load)
+    useEffect(() => {
+        if (user) {
+            setFullName(user.user_metadata?.full_name || '');
+            setEmail(user.email || '');
+            setRole(user.user_metadata?.role || 'Developer - Create with code');
+        }
+    }, [user]);
 
     const handleLogout = async () => {
         await logout();
         navigate('/login');
     };
 
-    const handleSaveChanges = () => {
-        alert('Changes saved successfully!');
+    const handleSaveChanges = async () => {
+        setLoading(true);
+        try {
+            // Update profile metadata
+            const { error: profileError } = await supabase.auth.updateUser({
+                data: { full_name: fullName, role: role }
+            });
+
+            if (profileError) throw profileError;
+
+            // Update password if provided
+            if (newPassword) {
+                const { error: passwordError } = await supabase.auth.updateUser({
+                    password: newPassword
+                });
+                if (passwordError) throw passwordError;
+            }
+
+            alert('Changes saved successfully!');
+            setNewPassword(''); // Clear password field
+        } catch (error) {
+            console.error('Error updating settings:', error);
+            alert('Failed to save changes: ' + error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
