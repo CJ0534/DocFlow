@@ -48,6 +48,16 @@ const DocumentUploadScreen = () => {
 
             if (dbError) throw dbError;
 
+            // 3. Increment project's doc_count
+            const { error: updateError } = await supabase.rpc('increment_doc_count', {
+                project_id_param: projectId
+            });
+
+            if (updateError) {
+                console.warn('Failed to update doc count:', updateError);
+                // Don't throw - document is already uploaded
+            }
+
             navigate(`/project/${projectId}`);
         } catch (error) {
             console.error('Upload failed:', error);

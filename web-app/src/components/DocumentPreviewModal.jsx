@@ -95,19 +95,54 @@ const DocumentPreviewModal = ({ isOpen, onClose, document, content }) => {
                         borderRight: '1px solid var(--glass-border)',
                         background: 'rgba(0,0,0,0.2)'
                     }}>
-                        <div style={{
-                            background: 'white',
-                            color: '#1e293b',
-                            padding: '3rem',
-                            borderRadius: '8px',
-                            minHeight: '100%',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                            fontFamily: 'monospace',
-                            whiteSpace: 'pre-wrap',
-                            lineHeight: '1.6'
-                        }}>
-                            {content || "Loading content..."}
-                        </div>
+                        {document.type?.startsWith('image/') ? (
+                            // Image Preview
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                minHeight: '100%'
+                            }}>
+                                <img
+                                    src={content}
+                                    alt={document.name}
+                                    style={{
+                                        maxWidth: '100%',
+                                        maxHeight: '100%',
+                                        borderRadius: '8px',
+                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)'
+                                    }}
+                                />
+                            </div>
+                        ) : document.type === 'application/pdf' ? (
+                            // PDF Preview
+                            <iframe
+                                src={content}
+                                title={document.name}
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)'
+                                }}
+                            />
+                        ) : (
+                            // Text Preview
+                            <div style={{
+                                background: 'white',
+                                color: '#1e293b',
+                                padding: '3rem',
+                                borderRadius: '8px',
+                                minHeight: '100%',
+                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                fontFamily: 'monospace',
+                                whiteSpace: 'pre-wrap',
+                                lineHeight: '1.6'
+                            }}>
+                                {content || "Loading content..."}
+                            </div>
+                        )}
                     </div>
 
                     {/* Metadata Sidebar */}

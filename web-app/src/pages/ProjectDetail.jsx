@@ -1,7 +1,7 @@
 import DocumentPreviewModal from '../components/DocumentPreviewModal';
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { FiChevronLeft, FiFile, FiUpload, FiRefreshCw, FiEye, FiTrash2, FiEdit2 } from 'react-icons/fi';
+import { FiChevronLeft, FiFile, FiUpload, FiRefreshCw, FiEye, FiTrash2, FiEdit2, FiDownload } from 'react-icons/fi';
 import { supabase } from '../services/supabase';
 
 const ProjectDetail = () => {
@@ -75,6 +75,15 @@ const ProjectDetail = () => {
                     .eq('id', docId);
 
                 if (error) throw error;
+
+                // Decrement project's doc_count
+                const { error: decrementError } = await supabase.rpc('decrement_doc_count', {
+                    project_id_param: projectId
+                });
+
+                if (decrementError) {
+                    console.warn('Failed to update doc count:', decrementError);
+                }
 
                 setDocuments(documents.filter(d => d.id !== docId));
             } catch (error) {
@@ -158,17 +167,61 @@ const ProjectDetail = () => {
         setShowPreviewModal(true);
 
         try {
-            const { data, error } = await supabase.storage
-                .from('documents')
-                .download(doc.storage_path);
+            // Check if it's an image or PDF
+            const isImage = doc.type?.startsWith('image/');
+            const isPdf = doc.type === 'application/pdf';
 
-            if (error) throw error;
+            if (isImage || isPdf) {
+                // For images and PDFs, get a signed URL
+                const { data, error } = await supabase.storage
+                    .from('documents')
+                    .createSignedUrl(doc.storage_path, 3600); // 1 hour expiry
 
-            const text = await data.text();
-            setPreviewContent(text);
+                if (error) throw error;
+                setPreviewContent(data.signedUrl);
+            } else {
+                // For text files, download and read as text
+                const { data, error } = await supabase.storage
+                    .from('documents')
+                    .download(doc.storage_path);
+
+                if (error) throw error;
+
+                const text = await data.text();
+                setPreviewContent(text);
+            }
         } catch (error) {
             console.error('Error fetching preview:', error);
             setPreviewContent('Failed to load document content.');
+        }
+    };
+
+    const handleDownload = async (doc) => {
+        try {
+            // Get a signed URL with the 'download' option to force Content-Disposition header
+            const { data, error } = await supabase.storage
+                .from('documents')
+                .createSignedUrl(doc.storage_path, 60, {
+                    download: doc.name
+                });
+
+            if (error) throw error;
+
+            // Trigger download directly from the signed URL
+            const link = document.createElement('a');
+            link.href = data.signedUrl;
+            link.setAttribute('download', doc.name); // Fallback for some browsers
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+
+            // Cleanup
+            setTimeout(() => {
+                document.body.removeChild(link);
+            }, 100);
+        } catch (error) {
+            console.error('Error downloading file:', error);
+            alert('Failed to download file: ' + error.message);
         }
     };
 
@@ -277,12 +330,19 @@ const ProjectDetail = () => {
                                                     <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center' }}>Processing...</span>
                                                 )}
                                                 {doc.status === 'extracted' && (
-                                                    <ActionButton
-                                                        icon={<FiEye />}
-                                                        label="View"
-                                                        primary
-                                                        onClick={() => handlePreview(doc)}
-                                                    />
+                                                    <>
+                                                        <ActionButton
+                                                            icon={<FiEye />}
+                                                            label="View"
+                                                            primary
+                                                            onClick={() => handlePreview(doc)}
+                                                        />
+                                                        <ActionButton
+                                                            icon={<FiDownload />}
+                                                            label="Download"
+                                                            onClick={() => handleDownload(doc)}
+                                                        />
+                                                    </>
                                                 )}
                                                 <ActionButton
                                                     icon={<FiEdit2 />}
