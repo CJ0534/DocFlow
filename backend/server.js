@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const authRoutes = require('./routes/authRoutes');
 const documentRoutes = require('./routes/documentRoutes');
+const supabaseAuth = require('./middleware/supabaseAuth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,14 +18,14 @@ app.use(express.json());
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    message: 'DocFlow MongoDB API is running',
+    message: 'DocFlow API is running with Supabase support',
     timestamp: new Date().toISOString(),
   });
 });
 
 // Auth & document routes
-app.use('/auth', authRoutes);
-app.use('/documents', documentRoutes);
+app.use('/auth', authRoutes); // Legacy MongoDB Auth
+app.use('/documents', supabaseAuth, documentRoutes); // Protected with Supabase Auth
 
 // Error handler
 app.use((err, req, res, next) => {
