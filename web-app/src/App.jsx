@@ -37,7 +37,8 @@ function AppRoutes() {
       <Route path="/org/:orgId/new-project" element={<ProtectedRoute><ProjectSetup /></ProtectedRoute>} />
       <Route path="/project/:projectId/upload" element={<ProtectedRoute><DocumentUploadScreen /></ProtectedRoute>} />
 
-      <Route path="/" element={
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/dashboard" element={
         <ProtectedRoute><Dashboard /></ProtectedRoute>
       } />
 
@@ -53,7 +54,7 @@ function AppRoutes() {
         <ProtectedRoute><ProjectDetail /></ProtectedRoute>
       } />
 
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
 }

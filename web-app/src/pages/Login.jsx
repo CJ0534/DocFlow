@@ -22,7 +22,7 @@ const Login = () => {
         try {
             const { error: loginError } = await login(email, password);
             if (loginError) throw loginError;
-            navigate('/');
+            navigate('/dashboard');
         } catch (err) {
             setError(err.message || 'Failed to sign in');
         } finally {

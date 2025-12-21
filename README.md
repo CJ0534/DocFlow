@@ -1,6 +1,6 @@
 # DocFlow - Document Management System
 
-A full-stack document management solution built for the hackathon with Node.js backend and React Native Android application.
+A full-stack document management solution built for the hackathon with Node.js backend.
 
 ## 📋 Overview
 
@@ -8,7 +8,7 @@ DocFlow enables users to:
 - Create organizations and projects
 - Upload documents to projects
 - Extract metadata and text content from files
-- View extraction results in a mobile app
+- Extract metadata and text content from files
 
 ## 🛠️ Tech Stack
 
@@ -18,11 +18,7 @@ DocFlow enables users to:
 - JWT authentication
 - Multer for file uploads
 
-**Android App:**
-- React Native
-- React Navigation
-- AsyncStorage for token persistence
-- Axios for API communication
+
 
 ## 📁 Project Structure
 
@@ -35,12 +31,7 @@ DocFlow/
 │   ├── services/        # Business logic
 │   ├── storage/         # Uploaded files & extractions
 │   └── server.js        # Entry point
-├── android/             # React Native mobile app
-│   ├── src/
-│   │   ├── api/        # API client
-│   │   ├── context/    # Auth context
-│   │   └── screens/    # App screens
-│   └── App.js          # Main component
+
 └── README.md
 ```
 
@@ -50,8 +41,7 @@ DocFlow/
 
 - **Node.js** (v16 or higher)
 - **npm** or **yarn**
-- **Android Studio** (for Android development)
-- **React Native CLI**: `npm install -g react-native-cli`
+
 - **JDK** 11 or higher
 
 ### Backend Setup
@@ -78,36 +68,7 @@ DocFlow/
    curl http://localhost:3000/health
    ```
 
-### Android App Setup
 
-1. **Navigate to android directory:**
-   ```bash
-   cd android
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Configure backend URL:**
-   - Open `src/api/client.js`
-   - Find your machine's IP address:
-     - Windows: `ipconfig`
-     - Mac/Linux: `ifconfig`
-   - Update `BASE_URL` to `http://YOUR_IP:3000`
-
-4. **Start Metro bundler:**
-   ```bash
-   npm start
-   ```
-
-5. **Run on Android** (in a new terminal):
-   ```bash
-   npm run android
-   ```
-
-   Or open `android/` folder in Android Studio and run the app.
 
 ## 📡 API Endpoints
 
@@ -195,8 +156,7 @@ backend/storage/<project_id>/<document_id>/
 ✅ Text content extraction for text files  
 ✅ Local folder structure storage  
 ✅ Document status tracking (uploaded, processing, extracted, failed)  
-✅ Mobile-friendly UI with React Native  
-✅ File picker integration  
+  
 ✅ Real-time extraction status display  
 
 ## 🧪 Testing
@@ -207,12 +167,12 @@ backend/storage/<project_id>/<document_id>/
 # Register
 curl -X POST http://localhost:3000/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","password":"test123"}'
+  -d '{"email":"jankutasaichaithanya@gmail.com","password":"Iphone16@sid"}'
 
 # Login
 curl -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","password":"test123"}'
+  -d '{"email":"jankutasaichaithanya@gmail.com","password":"Iphone16@sid"}'
 
 # Create Organization (use token from login)
 curl -X POST http://localhost:3000/orgs \
@@ -246,29 +206,7 @@ curl -X POST http://localhost:3000/projects/PROJECT_ID/documents \
 **Port already in use:**
 - Change `PORT` in `.env` file
 
-### Android Issues
 
-**Metro bundler errors:**
-```bash
-cd android
-rm -rf node_modules
-npm install
-npm start -- --reset-cache
-```
-
-**Unable to connect to backend:**
-- Ensure backend is running
-- Verify IP address in `src/api/client.js`
-- Check firewall settings
-- Make sure both devices are on same network
-
-**Build errors:**
-```bash
-cd android/android
-./gradlew clean
-cd ..
-npm run android
-```
 
 ## 📝 Notes
 

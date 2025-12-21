@@ -1,14 +1,9 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { createClient } = require('@supabase/supabase-js');
 
-const createToken = (user) => {
-  return jwt.sign(
-    { userId: user._id.toString(), email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: '7d' }
-  );
-};
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
 const register = async (req, res) => {
   try {
@@ -21,20 +16,22 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await User.create({ email, password: hashedPassword });
-    const token = createToken(user);
 
     return res.status(201).json({
       message: 'User registered successfully',
-      token,
-      user: { id: user._id, email: user.email },
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+      },
+      session: data.session,
     });
   } catch (error) {
     console.error('Register error:', error);
@@ -50,22 +47,23 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    if (error) {
+      return res.status(401).json({ error: error.message });
     }
-
-    const token = createToken(user);
 
     return res.json({
       message: 'Login successful',
-      token,
-      user: { id: user._id, email: user.email },
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+      },
+      session: data.session,
+      access_token: data.session.access_token,
     });
   } catch (error) {
     console.error('Login error:', error);
